@@ -59,8 +59,16 @@ function draw() {
 	drawPaddle();
 
 	// 因為碰撞偵測位於球的中心，因此得減掉半徑
-	if (y + dy < ballRadius || y + dy > canvas.height - ballRadius) {
+	if (y + dy < ballRadius) {
 		dy = -dy;
+	} else if (y + dy > canvas.height - ballRadius) {
+		// 碰到 paddleX要反彈
+		if (x > paddleX && x < paddleX + paddleWidth) {
+			dy = -dy;
+		} else {
+			alert('game over');
+			document.location.reload();
+		}
 	}
 
 	if (x + dx < ballRadius || x + dx > canvas.width - ballRadius) {
