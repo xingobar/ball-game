@@ -10,10 +10,12 @@ var dx = 2;
 var dy = -2;
 
 // 道具位置
-var toolX = canvas.width / getRandomInt(5);
+var toolX = canvas.width - getRandomInt(350);
 var toolY = -20;
 var toolRadius = 15;
 var toolDy = 2;
+var probability = 0; // 道具出現機率
+var isToolShow = false; // 道具是否以顯示, 例如：被吃或者是到最底部
 
 var paddleHeight = 10;
 var paddleWidth = 75;
@@ -86,12 +88,20 @@ function toolCollision() {
 	// 墜到底部時，參數要重置
 	if (toolY + toolDy > canvas.height) {
 		toolY = -20;
+		isToolShow = false;
+		console.log('collision bottom');
 	}
 
 	// 工具降落到底部，且又再paddle之間
 	if (toolX > paddleX && toolX < paddleWidth + paddleX && toolY + toolRadius >= canvas.height) {
 		toolY = -20;
 		paddleWidth += 50;
+		isToolShow = false;
+		console.log('collision paddle');
+	}
+
+	if (!isToolShow) {
+		toolX = canvas.width - getRandomInt(350);
 	}
 }
 
@@ -204,8 +214,16 @@ function draw() {
 	drawPaddle();
 	drawScore();
 	drawLives();
-	drawTool();
-	toolCollision();
+
+	// 概率大於6且工具球未出現的話，工具球就要出現
+	if (probability >= 6 && !isToolShow) {
+		isToolShow = true;
+	}
+	if (isToolShow) {
+		drawTool();
+		toolCollision();
+	}
+
 	bricksCollision();
 
 	// 因為碰撞偵測位於球的中心，因此得減掉半徑
@@ -247,7 +265,10 @@ function draw() {
 		paddleX -= 7;
 	}
 
-	toolY += toolDy; // 使工具向下
+	// 工具有顯示的話才要減
+	if (isToolShow) {
+		toolY += toolDy; // 使工具向下
+	}
 
 	x += dx;
 
@@ -255,5 +276,9 @@ function draw() {
 
 	requestAnimationFrame(draw);
 }
+
+setInterval(function() {
+	probability = getRandomInt(10);
+}, 2000);
 
 draw();
