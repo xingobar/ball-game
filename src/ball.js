@@ -26,6 +26,7 @@ var score = 0;
 
 document.addEventListener('keydown', keydownHandler, false);
 document.addEventListener('keyup', keyupHandler, false);
+document.addEventListener('mousemove', mouseMoveHandler, false);
 
 var bricks = [];
 for (var c = 0; c < brickColumnCount; c++) {
@@ -112,6 +113,15 @@ function keydownHandler(e) {
 
 	if (e.keyCode === 37) {
 		leftPressed = true;
+	}
+}
+
+// ref: https://blog.csdn.net/xf616510229/article/details/54427637
+function mouseMoveHandler(e) {
+	var relativeX = e.clientX - canvas.offsetLeft;
+
+	if (relativeX > 0 && relativeX < canvas.width) {
+		paddleX = relativeX - paddleWidth / 2;
 	}
 }
 
