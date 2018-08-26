@@ -23,6 +23,7 @@ var brickOffsetTop = 30;
 var brickOffsetLeft = 30;
 
 var score = 0;
+var lives = 3;
 
 document.addEventListener('keydown', keydownHandler, false);
 document.addEventListener('keyup', keyupHandler, false);
@@ -54,6 +55,12 @@ function bricksCollision() {
 			}
 		}
 	}
+}
+
+function drawLives() {
+	ctx.font = '16px Arial';
+	ctx.fillStyle = '#0095DD';
+	ctx.fillText('Lives: ' + lives, canvas.width - 65, 20);
 }
 
 function drawBricks() {
@@ -131,6 +138,7 @@ function draw() {
 	drawerBall();
 	drawPaddle();
 	drawScore();
+	drawLives();
 	bricksCollision();
 
 	// 因為碰撞偵測位於球的中心，因此得減掉半徑
@@ -141,8 +149,17 @@ function draw() {
 		if (x > paddleX && x < paddleX + paddleWidth) {
 			dy = -dy;
 		} else {
-			//alert('game over');
-			//document.location.reload();
+			lives--;
+			if (lives <= 0) {
+				alert('Game Over');
+				document.location.reload();
+			} else {
+				x = canvas.width / 2;
+				y = canvas.height - 30;
+				dx = 2;
+				dy = -2;
+				paddleX = (canvas.width - paddleWidth) / 2;
+			}
 		}
 	}
 
@@ -161,8 +178,11 @@ function draw() {
 	x += dx;
 
 	y += dy;
+
+	requestAnimationFrame(draw);
 }
 
-setInterval(function() {
-	draw();
-}, 10);
+draw();
+// setInterval(function() {
+// 	draw();
+// }, 10);
