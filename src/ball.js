@@ -22,6 +22,8 @@ var brickPadding = 10;
 var brickOffsetTop = 30;
 var brickOffsetLeft = 30;
 
+var score = 0;
+
 document.addEventListener('keydown', keydownHandler, false);
 document.addEventListener('keyup', keyupHandler, false);
 
@@ -42,6 +44,11 @@ function bricksCollision() {
 					// collision bricks
 					b.status = 0;
 					dy = -dy;
+					score++;
+					if (score == brickColumnCount * brickRowCount) {
+						alert('YOU WIN!');
+						document.location.reload();
+					}
 				}
 			}
 		}
@@ -64,6 +71,12 @@ function drawBricks() {
 			}
 		}
 	}
+}
+
+function drawScore() {
+	ctx.font = '16px Arial';
+	ctx.fillStyle = '#0095DD';
+	ctx.fillText('Score: ' + score, 8, 20);
 }
 
 function drawerBall() {
@@ -107,6 +120,7 @@ function draw() {
 	drawBricks();
 	drawerBall();
 	drawPaddle();
+	drawScore();
 	bricksCollision();
 
 	// 因為碰撞偵測位於球的中心，因此得減掉半徑
