@@ -16,6 +16,9 @@ var toolRadius = 15;
 var toolDy = 2;
 var probability = 0; // 道具出現機率
 var isToolShow = false; // 道具是否以顯示, 例如：被吃或者是到最底部
+var toolTimeoutSeconds = 10000; // 10秒後道具效果消失
+var toolAddPaddleWidth = 50; // 道具所能增加 paddle的寬度
+var toolInitY = -20; // 所要初始話的工具位置變數
 
 var paddleHeight = 10;
 var paddleWidth = 75;
@@ -83,20 +86,28 @@ function bricksCollision() {
 	}
 }
 
+//工具10秒後效果消失
+function toolTimeout() {
+	setTimeout(function() {
+		paddleWidth -= toolAddPaddleWidth;
+	}, toolTimeoutSeconds);
+}
+
 // 工具碰撞偵測
 function toolCollision() {
 	// 墜到底部時，參數要重置
 	if (toolY + toolDy > canvas.height) {
-		toolY = -20;
+		toolY = toolInitY;
 		isToolShow = false;
 		console.log('collision bottom');
 	}
 
 	// 工具降落到底部，且又再paddle之間
 	if (toolX > paddleX && toolX < paddleWidth + paddleX && toolY + toolRadius >= canvas.height) {
-		toolY = -20;
-		paddleWidth += 50;
+		toolY = toolInitY;
+		paddleWidth += toolAddPaddleWidth;
 		isToolShow = false;
+		toolTimeout();
 		console.log('collision paddle');
 	}
 
