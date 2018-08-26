@@ -1,21 +1,26 @@
 var canvas = document.getElementById('ball_canvas');
 var ctx = canvas.getContext('2d');
 
-//畫正方形
-ctx.beginPath();
-ctx.rect(20, 40, 50, 50);
-ctx.fillStyle = '#FF0000';
-ctx.fill();
-ctx.closePath();
+var x = canvas.width / 2;
+var y = canvas.height - 30;
+var dx = 2;
+var dy = -2;
 
-ctx.beginPath();
-ctx.arc(240, 160, 20, 0, Math.PI * 2, false);
-ctx.fillStyle = 'green';
-ctx.fill();
-ctx.closePath();
+function drawerBall() {
+	ctx.beginPath();
+	ctx.arc(x, y, 15, 0, Math.PI * 2, false);
+	ctx.fillStyle = 'blue';
+	ctx.fill();
+	ctx.closePath();
+}
 
-ctx.beginPath();
-ctx.rect(160, 10, 50, 50);
-ctx.strokeStyle = 'rgba(0, 0, 255, 0.5)';
-ctx.stroke();
-ctx.closePath();
+function draw() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	drawerBall();
+	x += dx;
+	y += dy;
+}
+
+setInterval(function() {
+	draw();
+}, 10);
