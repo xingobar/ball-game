@@ -16,17 +16,21 @@ var toolRadius = 15;
 var toolDy = 2;
 var probability = 0; // 道具出現機率
 var isToolShow = false; // 道具是否以顯示, 例如：被吃或者是到最底部
-var toolTimeoutSeconds = 10000; // 10秒後道具效果消失
+var toolIntervalSeconds = 5000; // 5秒後道具效果消失 （初始 ＆ 設定用）
+var toolTime = 5; // 5秒計時 (計時用)
 var toolAddPaddleWidth = 50; // 道具所能增加 paddle的寬度
 var toolInitY = -20; // 所要初始話的工具位置變數
+var toolSetInterval = null;
 
 var paddleHeight = 10;
 var paddleWidth = 75;
+var paddleOriginWidth = 75;
 var paddleX = (canvas.width - paddleWidth) / 2;
 
 var rightPressed = false;
 var leftPressed = false;
 
+//磚塊設定
 var brickRowCount = 3;
 var brickColumnCount = 5;
 var brickWidth = 75;
@@ -87,10 +91,18 @@ function bricksCollision() {
 }
 
 //工具10秒後效果消失
-function toolTimeout() {
-	setTimeout(function() {
-		paddleWidth -= toolAddPaddleWidth;
-	}, toolTimeoutSeconds);
+function toolInterval() {
+	toolSetInterval = setInterval(function() {
+		toolTime--;
+		if (toolTime > 0) {
+		} else {
+			clearInterval(toolSetInterval);
+			toolTime = 5;
+			if (paddleWidth > paddleOriginWidth) {
+				paddleWidth -= toolAddPaddleWidth;
+			}
+		}
+	}, toolIntervalSeconds);
 }
 
 // 工具碰撞偵測
@@ -99,7 +111,6 @@ function toolCollision() {
 	if (toolY + toolDy > canvas.height) {
 		toolY = toolInitY;
 		isToolShow = false;
-		console.log('collision bottom');
 	}
 
 	// 工具降落到底部，且又再paddle之間
@@ -107,8 +118,12 @@ function toolCollision() {
 		toolY = toolInitY;
 		paddleWidth += toolAddPaddleWidth;
 		isToolShow = false;
-		toolTimeout();
-		console.log('collision paddle');
+
+		//假如要設定過，要把前一個給清除掉，重新計算
+		if (toolSetInterval) {
+			clearInterval(toolSetInterval);
+		}
+		toolInterval();
 	}
 
 	if (!isToolShow) {
@@ -116,12 +131,21 @@ function toolCollision() {
 	}
 }
 
+// 繪製工具剩餘時間
+function drawToolRemainTime(time) {
+	ctx.font = '16px Arial';
+	ctx.fillStyle = '#0095DD';
+	ctx.fillText('Tool : ' + time, canvas.width - 120, 20);
+}
+
+//生命線
 function drawLives() {
 	ctx.font = '16px Arial';
 	ctx.fillStyle = '#0095DD';
 	ctx.fillText('Lives: ' + lives, canvas.width - 65, 20);
 }
 
+// 磚塊
 function drawBricks() {
 	for (var c = 0; c < brickColumnCount; c++) {
 		for (var r = 0; r < brickRowCount; r++) {
@@ -237,6 +261,10 @@ function draw() {
 
 	bricksCollision();
 
+	if (toolSetInterval && toolTime > 0) {
+		drawToolRemainTime(toolTime);
+	}
+
 	// 因為碰撞偵測位於球的中心，因此得減掉半徑
 	if (y + dy < ballRadius) {
 		dy = -dy;
@@ -248,6 +276,13 @@ function draw() {
 			dy = -dy;
 		} else {
 			lives--;
+			paddleWidth = paddleOriginWidth; // 因為死掉,所以寬度要reset
+
+			if (toolInterval) {
+				clearInterval(toolInterval);
+				toolTime = 5;
+			}
+
 			if (lives <= 0) {
 				alert('Game Over');
 				document.location.reload();
