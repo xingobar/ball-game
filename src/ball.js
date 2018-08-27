@@ -38,6 +38,7 @@ var brickHeight = 20;
 var brickPadding = 10;
 var brickOffsetTop = 30;
 var brickOffsetLeft = 30;
+var brickAddedWidth = 0; // 因為吃到工具，磚塊已經增加的寬度
 
 var score = 0;
 var lives = 3;
@@ -99,7 +100,8 @@ function toolInterval() {
 			clearInterval(toolSetInterval);
 			toolTime = 5;
 			if (paddleWidth > paddleOriginWidth) {
-				paddleWidth -= toolAddPaddleWidth;
+				paddleWidth -= brickAddedWidth;
+				brickAddedWidth = 0;
 			}
 		}
 	}, toolIntervalSeconds);
@@ -118,6 +120,7 @@ function toolCollision() {
 		toolY = toolInitY;
 		paddleWidth += toolAddPaddleWidth;
 		isToolShow = false;
+		brickAddedWidth += toolAddPaddleWidth;
 
 		//假如要設定過，要把前一個給清除掉，重新計算
 		if (toolSetInterval) {
@@ -277,6 +280,7 @@ function draw() {
 		} else {
 			lives--;
 			paddleWidth = paddleOriginWidth; // 因為死掉,所以寬度要reset
+			brickAddedWidth = 0;
 
 			if (toolInterval) {
 				clearInterval(toolInterval);
